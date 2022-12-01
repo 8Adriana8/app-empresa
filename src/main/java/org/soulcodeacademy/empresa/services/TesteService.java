@@ -17,6 +17,7 @@ import java.util.List;
 
 @Service
 public class TesteService {
+
     @Autowired
     private EmpregadoRepository empregadoRepository;
 
@@ -30,7 +31,7 @@ public class TesteService {
     private ProjetoRepository projetoRepository;
 
     @PostConstruct
-    public void testarEntidades() {
+    public void testarEntidade() {
         Empregado empregado1 = new Empregado(null, "José Carlos", "jc@gmail.com", 7000.0);
         Empregado empregado2 = new Empregado(null, "José Antonio", "ja@gmail.com", 8500.0);
         Empregado empregado3 = new Empregado(null, "Cláudio José", "cj@gmail.com", 8500.0);
@@ -38,6 +39,7 @@ public class TesteService {
         Endereco endereco1 = new Endereco(null, "Ubajara", "CE");
         Endereco endereco2 = new Endereco(null, "São Paulo", "SP");
         Endereco endereco3 = new Endereco(null, "São Paulo", "SP");
+
 
         // Associação 1:1
         empregado1.setEndereco(endereco1);
@@ -47,7 +49,8 @@ public class TesteService {
         this.enderecoRepository.saveAll(List.of(endereco1, endereco2, endereco3));
         this.empregadoRepository.saveAll(List.of(empregado1, empregado2, empregado3));
 
-        // Associação 1:N
+        //Associação 1:N
+
         Dependente dependente1 = new Dependente(null, "Maria Antonieta", 13);
         Dependente dependente2 = new Dependente(null, "Carlos José", 11);
         Dependente dependente3 = new Dependente(null, "Pedro Alves", 9);
@@ -58,25 +61,30 @@ public class TesteService {
 
         this.dependenteRepository.saveAll(List.of(dependente1, dependente2, dependente3));
 
-        // Associação N:N
-        Projeto projeto1 = new Projeto(null, "Campanha de marketing I", 5000.0, "Campanha 1º semestre");
-        Projeto projeto2 = new Projeto(null, "Campanha de marketing II", 8500.0, "Campanha 2º semestre");
+        // Igualdade de objetos
+        // Quando usamos new alocamos o objeto em um endereço de memória
+        Projeto projeto1 = new Projeto(1, "Campanha I", 2500.0, "Descrição top");
+        Projeto projeto2 = new Projeto(2, "Campanha I", 2500.0, "Descrição top");
 
-        this.projetoRepository.saveAll(List.of(projeto1, projeto2));
+        if (projeto1.equals(projeto2)) { // Compara se são identicos, estão no mesmo local de memória
+            System.out.println("São iguais!");
+        } else {
+            System.out.println("Não são iguais");
+        }
 
-        empregado1.getProjetos().add(projeto1); // O empregado1 participa do projeto1
-        empregado1.getProjetos().add(projeto2); // O empregado1 participa do projeto2
+        System.out.println(projeto1.hashCode());
+        System.out.println(projeto2.hashCode());
 
-        empregado2.getProjetos().add(projeto2); // O empregado2 participa do projeto2
+        List<Projeto> projetos = new ArrayList<>();
+        projetos.add(projeto1);
+        projetos.add(projeto2);
 
-        this.empregadoRepository.save(empregado1);
-        this.empregadoRepository.save(empregado2);
+        System.out.println(projetos);
 
-        // Remover projeto do empregado
-        Empregado preguicoso = this.empregadoRepository.findById(2).orElseThrow();
-        System.out.println(preguicoso.getProjetos());
-        preguicoso.getProjetos().remove(projeto2);
+        Projeto projeto3 = new Projeto(2, "Campanha I", 2500.0, "Descrição top");
 
-        this.empregadoRepository.save(preguicoso);
+        projetos.remove(projeto3);
+
+        System.out.println(projetos);
     }
 }
